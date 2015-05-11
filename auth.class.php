@@ -36,14 +36,6 @@ class Auth {
     }
     return self::ERROR_OCCURRED;
   }
-
-  public function userExists($email) {
-    $selection = $this->findUserPdo($email);
-    if ($selection) {
-      return true;
-    }
-    return false; 
-  }
   
   public function login($email, $password) {
     $selection = $this->findUserPdo($email);
@@ -62,32 +54,12 @@ class Auth {
     return self::REJECT;
   }
 
-  protected function createSession($user_id) {
-    $token = $this->createToken();
-    session_start();
-    $_SESSION['token'] = $token;
-    $_SESSION['user_id'] = $user_id;
-    if ($this->removeSessionPdo($user_id) &&
-      $this->createSessionPdo($user_id, $token)) {
-        return self::SUCCESSFUL;
+  public function userExists($email) {
+    $selection = $this->findUserPdo($email);
+    if ($selection) {
+      return true;
     }
-    return self::ERROR_OCCURRED;
-  }
-
-  private function createToken() {
-    $random = $this->randomString();
-    $token = $_SERVER['HTTP_USER_AGENT'] . $random;
-    $token = $this->hashData($token);
-    return $token;
-  }
-
-  protected function saltAndHash($salt, $password) {
-    $password = $this->saltPassword($salt, $password);
-    return $this->hashData($password);
-  }
-
-  protected function saltPassword($salt, $password) {
-    return($user_salt . $password);
+    return false; 
   }
 
   // note: this is a placeholder... I want to take this out and replace with $user->isAdmin()
@@ -99,7 +71,28 @@ class Auth {
     return false;
   }
 
-  protected function hashData($data) {
+  private function createSession($user_id) {
+    $token = $this->createToken();
+    session_start();
+    $_SESSION['token'] = $token;
+    $_SESSION['user_id'] = $user_id;
+    if ($this->removeSessionPdo($user_id) &&
+      $this->createSessionPdo($user_id, $token)) {
+        return self::SUCCESSFUL;
+    }
+    return self::ERROR_OCCURRED;
+  }
+
+  private function saltAndHash($salt, $password) {
+    $password = $this->saltPassword($salt, $password);
+    return $this->hashData($password);
+  }
+
+  private function saltPassword($salt, $password) {
+    return($user_salt . $password);
+  }
+
+  private function hashData($data) {
     return hash_hmac('sha512', $data, $this->_siteKey);
   }
 
@@ -111,6 +104,13 @@ class Auth {
       $string .= $characters[mt_rand(0, strlen($characters) -1)];
     }
     return $string;
+  }
+
+  private function createToken() {
+    $random = $this->randomString();
+    $token = $_SERVER['HTTP_USER_AGENT'] . $random;
+    $token = $this->hashData($token);
+    return $token;
   }
 
   // ******** PDO Functions ******* (move into a separate class later) ********* //
