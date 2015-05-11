@@ -55,7 +55,10 @@ class Auth {
   }
 
   public function checkSession() {
-    return true;
+    session_start();
+    $row = $this->retrieveSession();    
+    print_r($row);
+    return false;
   }
 
   public function userExists($email) {
@@ -85,6 +88,12 @@ class Auth {
         return self::SUCCESSFUL;
     }
     return self::ERROR_OCCURRED;
+  }
+
+  private function retrieveSession() {
+    $user_id = $_SESSION['user_id'];
+    $row = $this->retrieveSessionPdo($user_id);
+    return $row;
   }
 
   private function saltAndHash($salt, $password) {
@@ -131,7 +140,7 @@ class Auth {
     $sql = "SELECT * FROM `users` WHERE `email` = :email";
     $q = $this->_pdo->prepare($sql);
     $q->execute(array(':email' => $email));
-    $row = $q->fetch();
+    $row = $q->fetch(PDO::FETCH_ASSOC);
     return $row;
   }
 
@@ -153,5 +162,13 @@ class Auth {
       ":session_id" => $session_id,
       ":token" => $token));
   }
+
+  private function retrieveSessionPdo($user_id) {
+    $sql = "SELECT * FROM `user_sessions` WHERE `user_id` = :user_id";
+    $q = $this->_pdo->prepare($sql);
+    $q->execute(array(':user_id' => $user_id));
+    $row = $q->fetch(PDO::FETCH_ASSOC);
+    return $row;
+  } 
 }
 ?>
