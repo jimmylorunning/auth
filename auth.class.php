@@ -54,6 +54,10 @@ class Auth {
     return self::REJECT;
   }
 
+  public function checkSession() {
+    return true;
+  }
+
   public function userExists($email) {
     $selection = $this->findUserPdo($email);
     if ($selection) {
