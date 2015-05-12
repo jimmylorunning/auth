@@ -4,8 +4,9 @@ if ($_POST) {
   require_once 'config.inc.php';
   
   $auth = new Auth($db, $dbconfig);
-  echo $auth->login($_POST['email'], $_POST['password']);
-  
+  $authcode = $auth->login($_POST['email'], $_POST['password']);
+  echo $authcode;
+
 } else { ?>
   <form action="login.php" method="post">
   Email: <input type="text" name="email" value=""><br />

@@ -116,7 +116,7 @@ class Auth {
   }
 
   private function saltPassword($salt, $password) {
-    return($user_salt . $password);
+    return($salt . $password);
   }
 
   private function hashData($data) {
