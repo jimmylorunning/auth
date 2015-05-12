@@ -85,11 +85,11 @@ class Auth {
   }
 
   private function refreshSession() {
+    session_start(); // in case it hasn't already been called
     session_regenerate_id();
-    // to do: 
-    //  regenerate token
-    //  store in session
-    //  update users_session table with new session token
+    $token = $this->createToken();
+    $_SESSION['token'] = $token;
+    return $this->removeAndCreateSession($_SESSION['user_id'], $token);
   }
 
   private function createSession($user_id) {
@@ -97,6 +97,10 @@ class Auth {
     session_start();
     $_SESSION['token'] = $token;
     $_SESSION['user_id'] = $user_id;
+    return $this->removeAndCreateSession($user_id, $token);
+  }
+
+  private function removeAndCreateSession($user_id, $token) {
     if ($this->removeSessionPdo($user_id) &&
       $this->createSessionPdo($user_id, $token)) {
         return self::SUCCESSFUL;
