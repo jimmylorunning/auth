@@ -85,6 +85,16 @@ class Auth {
     return false;
   }
 
+  public function logout() {
+    session_start();
+    // use all 3 strategies, just to make sure
+    $this->removeSessionByUserIdPdo($_SESSION['user_id']);
+    $this->removeSessionByTokenPdo($_SESSION['token']);
+    $this->removeSessionByIdPdo(session_id());
+    session_destroy();
+  }
+    
+
   private function userExists($email) {
     $selection = $this->findUserByEmailPdo($email);
     if ($selection) {
@@ -110,7 +120,7 @@ class Auth {
   }
 
   private function removeAndCreateSession($user_id, $token) {
-    if ($this->removeSessionPdo($user_id) &&
+    if ($this->removeSessionByUserIdPdo($user_id) &&
       $this->createSessionPdo($user_id, $token)) {
         return self::SUCCESSFUL;
     }
@@ -179,10 +189,22 @@ class Auth {
     return $row;
   }
 
-  private function removeSessionPdo($user_id) {
+  private function removeSessionByUserIdPdo($user_id) {
     $sql = "DELETE FROM `user_sessions` WHERE `user_id` = :user_id";
     $q = $this->_pdo->prepare($sql);
     return $q->execute(array(":user_id" => $user_id));
+  }
+
+  private function removeSessionByTokenPdo($token) {
+    $sql = "DELETE FROM `user_sessions` WHERE `token` = :token";
+    $q = $this->_pdo->prepare($sql);
+    return $q->execute(array(":token" => $token));
+  }
+
+  private function removeSessionByIdPdo($session_id) {
+    $sql = "DELETE FROM `user_sessions` WHERE `id` = :id";
+    $q = $this->_pdo->prepare($sql);
+    return $q->execute(array(":id" => $session_id));
   }
 
   private function createSessionPdo($user_id, $token) {
