@@ -57,7 +57,13 @@ class Auth {
   public function checkSession() {
     session_start();
     $row = $this->retrieveSession();    
-    print_r($row);
+    if ($row) {
+      if (session_id() == $row['session_id'] && 
+        $_SESSION['token'] == $row['token']) {
+          $this->refreshSession();
+          return true;
+      }
+    }
     return false;
   }
 
@@ -76,6 +82,14 @@ class Auth {
       return true;
     }
     return false;
+  }
+
+  private function refreshSession() {
+    session_regenerate_id();
+    // to do: 
+    //  regenerate token
+    //  store in session
+    //  update users_session table with new session token
   }
 
   private function createSession($user_id) {
