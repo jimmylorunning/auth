@@ -38,7 +38,7 @@ class Auth {
   }
   
   public function login($email, $password) {
-    $selection = $this->findUserPdo($email);
+    $selection = $this->findUserByEmailPdo($email);
     if ($selection == null) {
       return self::REJECT;
     }
@@ -61,18 +61,19 @@ class Auth {
       if (session_id() == $row['session_id'] && 
         $_SESSION['token'] == $row['token']) {
           $this->refreshSession();
-          return true;
+          return $row['user_id'];
       }
     }
     return false;
   }
 
-  public function userExists($email) {
-    $selection = $this->findUserPdo($email);
-    if ($selection) {
-      return true;
+  // to do: instantiate User instance (first I'd have to write a User class though)
+  public function currentUser() {
+    $user_id = $this->checkSession();
+    if ($user_id) {
+      return $this->findUserByIdPdo($user_id);
     }
-    return false; 
+    return false;
   }
 
   // note: this is a placeholder... I want to take this out and replace with $user->isAdmin()
@@ -82,6 +83,14 @@ class Auth {
       return true;
     }
     return false;
+  }
+
+  private function userExists($email) {
+    $selection = $this->findUserByEmailPdo($email);
+    if ($selection) {
+      return true;
+    }
+    return false; 
   }
 
   private function refreshSession() {
@@ -154,10 +163,18 @@ class Auth {
     return $q->rowCount();
   }
 
-  private function findUserPdo($email) {
+  private function findUserByEmailPdo($email) {
     $sql = "SELECT * FROM `users` WHERE `email` = :email";
     $q = $this->_pdo->prepare($sql);
     $q->execute(array(':email' => $email));
+    $row = $q->fetch(PDO::FETCH_ASSOC);
+    return $row;
+  }
+
+  private function findUserByIdPdo($user_id) {
+    $sql = "SELECT * FROM `users` WHERE `id` = :user_id";
+    $q = $this->_pdo->prepare($sql);
+    $q->execute(array(':user_id' => $user_id));
     $row = $q->fetch(PDO::FETCH_ASSOC);
     return $row;
   }
