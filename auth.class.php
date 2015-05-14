@@ -9,14 +9,18 @@ class Auth {
   private $_siteKey;
   private $_pdo;
 
-  public function __construct($db, $dbconfig) {
-    $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
-    $this->_pdo = new PDO("mysql:host={$dbconfig['host']};" .
+  public static function newPdo($db, $dbconfig) {
+    return new PDO("mysql:host={$dbconfig['host']};" .
       "dbname={$dbconfig['dbname']};" .
       "charset={$dbconfig['charset']}",
       $dbconfig['user'],
       $dbconfig['password'],
       array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+  }
+  
+  public function __construct($pdo) {
+    $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
+    $this->_pdo = $pdo;
   }
 
   public function createUser($email, $password, $is_admin = 0) {

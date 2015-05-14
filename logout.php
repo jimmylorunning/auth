@@ -2,7 +2,8 @@
   require_once 'auth.class.php';
   require_once 'config.inc.php';
   
-  $auth = new Auth($db, $dbconfig);
+  $pdo = Auth::newPdo($db, $dbconfig);
+  $auth = new Auth($pdo);
   $auth->logout();
 ?>
 OK.

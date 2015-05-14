@@ -3,7 +3,8 @@ if ($_POST) {
   require_once 'auth.class.php';
   require_once 'config.inc.php';
   
-  $auth = new Auth($db, $dbconfig);
+  $pdo = Auth::newPdo($db, $dbconfig);
+  $auth = new Auth($pdo);
   $authcode = $auth->login($_POST['email'], $_POST['password']);
   echo $authcode;
 
