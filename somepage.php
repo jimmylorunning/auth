@@ -2,7 +2,7 @@
   require_once 'auth.class.php';
   require_once 'config.inc.php';
 
-  $pdo = Auth::newPdo($db, $dbconfig);
+  $pdo = Auth::newPdo($dbconfig);
   $auth = new Auth($pdo);
 
   if ($auth->checkSession()) {

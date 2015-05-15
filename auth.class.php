@@ -9,7 +9,7 @@ class Auth {
   private $_siteKey;
   private $_pdo;
 
-  public static function newPdo($db, $dbconfig) {
+  public static function newPdo($dbconfig) {
     return new PDO("mysql:host={$dbconfig['host']};" .
       "dbname={$dbconfig['dbname']};" .
       "charset={$dbconfig['charset']}",
