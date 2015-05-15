@@ -1,10 +1,8 @@
 <?php
 if ($_POST) {
   require_once 'auth.class.php';
-  require_once 'config.inc.php';
   
-  $pdo = Auth::newPdo($dbconfig);
-  $auth = new Auth($pdo);
+  $auth = new Auth();
   echo $auth->createUser($_POST['email'], $_POST['password']);
   
 } else { ?>

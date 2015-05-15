@@ -1,4 +1,6 @@
 <?php
+require_once 'database.class.php';
+
 class Auth {
   const SUCCESSFUL = 1;
   const NOT_ACTIVE = 2;
@@ -8,19 +10,19 @@ class Auth {
 
   private $_siteKey;
   private $_pdo;
+  private $_userGW;
 
-  public static function newPdo($dbconfig) {
-    return new PDO("mysql:host={$dbconfig['host']};" .
-      "dbname={$dbconfig['dbname']};" .
-      "charset={$dbconfig['charset']}",
-      $dbconfig['user'],
-      $dbconfig['password'],
-      array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-  }
-  
-  public function __construct($pdo) {
+/*  
+  public function __construct(Gateway $userGateway = null, Gateway $userSessionGateway = null) {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
-    $this->_pdo = $pdo;
+    $this->_userGW = $userGateway ? new userGateway();
+    $this->_userSessionGW = $userSessionGateway ? new userSessionGateway();
+  }
+*/
+
+  public function __construct() {
+    $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
+    $this->_pdo = Database::getHandle();
   }
 
   public function createUser($email, $password, $is_admin = 0) {

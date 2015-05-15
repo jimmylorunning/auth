@@ -1,6 +1,7 @@
 <?php
+
 require_once 'auth.class.php';
-require_once 'config.inc.php';
+require_once 'database.class.php';
 
 // http://code.tutsplus.com/tutorials/evolving-toward-a-persistence-layer--net-27138
 
@@ -11,10 +12,9 @@ class AuthTest extends PHPUnit_Framework_TestCase
 
   // The setUp() and tearDown() template methods are run once for each test method (and on fresh instances) of the test case class.
   public function setUp() {
-    global $dbconfig;
-    $this->pdo = Auth::newPdo($dbconfig);
-    $this->auth = new Auth($this->pdo);
-  }
+    $this->pdo = Database::getHandle();
+    $this->auth = new Auth();
+  }    
 
   public function testCreateUser() {
     $this->cleanUpDatabase();
