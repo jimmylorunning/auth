@@ -1,5 +1,5 @@
 <?php
-require_once 'database.class.php';
+require_once 'connectionfactory.class.php';
 
 class Auth {
   const SUCCESSFUL = 1;
@@ -22,7 +22,7 @@ class Auth {
 
   public function __construct() {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
-    $this->_pdo = Database::getHandle();
+    $this->_pdo = ConnectionFactory::getFactory()->getConnection();
   }
 
   public function createUser($email, $password, $is_admin = 0) {
