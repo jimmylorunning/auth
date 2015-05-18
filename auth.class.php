@@ -1,5 +1,6 @@
 <?php
 require_once 'connectionfactory.class.php';
+require_once 'usergateway.class.php';
 
 class Auth {
   const SUCCESSFUL = 1;
@@ -10,7 +11,7 @@ class Auth {
 
   private $_siteKey;
   private $_pdo;
-  private $_userGW;
+  private $_user_gw;
 
 /*  
   public function __construct(Gateway $userGateway = null, Gateway $userSessionGateway = null) {
@@ -23,6 +24,7 @@ class Auth {
   public function __construct() {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
     $this->_pdo = ConnectionFactory::getFactory()->getConnection();
+    $this->_user_gw = new UserGateway();
   }
 
   public function createUser($email, $password, $is_admin = 0) {
@@ -31,7 +33,14 @@ class Auth {
     }
     $user_salt = $this->randomString();
     $password = $this->saltAndHash($user_salt, $password);
-    $created = $this->createUserPdo(array(
+/*    $created = $this->createUserPdo(array(
+        ':email' => $email,
+        ':password' => $password,
+        ':user_salt' => $user_salt,
+        ':is_admin' => $is_admin,
+        ':is_active' => 1));
+*/
+    $created = $this->_user_gw->create(array(
         ':email' => $email,
         ':password' => $password,
         ':user_salt' => $user_salt,
@@ -44,7 +53,8 @@ class Auth {
   }
   
   public function login($email, $password) {
-    $selection = $this->findUserByEmailPdo($email);
+//    $selection = $this->findUserByEmailPdo($email);
+    $selection = $this->_user_gw->findBy('email', $email);
     if ($selection == null) {
       return self::REJECT;
     }
@@ -77,7 +87,8 @@ class Auth {
   public function currentUser() {
     $user_id = $this->checkSession();
     if ($user_id) {
-      return $this->findUserByIdPdo($user_id);
+//      return $this->findUserByIdPdo($user_id);
+      return $this->_user_gw->findById($user_id);
     }
     return false;
   }
@@ -102,7 +113,8 @@ class Auth {
     
 
   private function userExists($email) {
-    $selection = $this->findUserByEmailPdo($email);
+//    $selection = $this->findUserByEmailPdo($email);
+    $selection = $this->_user_gw->findBy('email', $email);
     if ($selection) {
       return true;
     }
@@ -170,30 +182,6 @@ class Auth {
   }
 
   // ******** PDO Functions ******* (move into a separate class later) ********* //
-
-  private function createUserPdo($user) {
-    $sql = "INSERT INTO `users` (email,password,user_salt,is_admin,is_active) " .
-      "VALUES (:email,:password,:user_salt,:is_admin,:is_active)";
-    $q = $this->_pdo->prepare($sql);
-    $q->execute($user);
-    return $q->rowCount();
-  }
-
-  private function findUserByEmailPdo($email) {
-    $sql = "SELECT * FROM `users` WHERE `email` = :email";
-    $q = $this->_pdo->prepare($sql);
-    $q->execute(array(':email' => $email));
-    $row = $q->fetch(PDO::FETCH_ASSOC);
-    return $row;
-  }
-
-  private function findUserByIdPdo($user_id) {
-    $sql = "SELECT * FROM `users` WHERE `id` = :user_id";
-    $q = $this->_pdo->prepare($sql);
-    $q->execute(array(':user_id' => $user_id));
-    $row = $q->fetch(PDO::FETCH_ASSOC);
-    return $row;
-  }
 
   private function removeSessionByUserIdPdo($user_id) {
     $sql = "DELETE FROM `user_sessions` WHERE `user_id` = :user_id";
