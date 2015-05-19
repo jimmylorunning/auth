@@ -39,9 +39,6 @@ class Session {
 
   public function isValid() {
     $row = $this->find();
-/*    print_r($row);
-    echo 'ss = ' . session_id();
-    echo 'tk = ' . $_SESSION['token']; */
     if ($row) {
       if (session_id() == $row['session_id'] &&
         $_SESSION['token'] == $row['token']) {
@@ -62,5 +59,12 @@ class Session {
     session_regenerate_id();
     $_SESSION['token'] = $token;
     return $this->create($user_id, $token);
+  }
+
+  public function destroy() {
+    $this->_session_gw->deleteBy('user_id', $_SESSION['user_id']);
+    $this->_session_gw->deleteBy('token', $_SESSION['token']);
+    $this->_session_gw->deleteBy('session_id', session_id());
+    session_destroy();
   }
 }

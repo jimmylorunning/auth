@@ -15,14 +15,6 @@ class Auth {
   private $_user_gw;
   private $_session;
 
-/*  
-  public function __construct(Gateway $userGateway = null, Gateway $userSessionGateway = null) {
-    $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
-    $this->_userGW = $userGateway ? new userGateway();
-    $this->_userSessionGW = $userSessionGateway ? new userSessionGateway();
-  }
-*/
-
   public function __construct() {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
     $this->_pdo = ConnectionFactory::getFactory()->getConnection();
@@ -89,14 +81,8 @@ class Auth {
   }
 
   public function logout() {
-    session_start();
-    // use all 3 strategies, just to make sure
-    $this->removeSessionByUserIdPdo($_SESSION['user_id']);
-    $this->removeSessionByTokenPdo($_SESSION['token']);
-    $this->removeSessionByIdPdo(session_id());
-    session_destroy();
+    $this->_session->destroy();
   }
-    
 
   private function userExists($email) {
     $selection = $this->_user_gw->findBy('email', $email);
@@ -134,25 +120,5 @@ class Auth {
     $token = $_SERVER['HTTP_USER_AGENT'] . $random;
     $token = $this->hashData($token);
     return $token;
-  }
-
-  // ******** PDO Functions ******* (move into a separate class later) ********* //
-
-  private function removeSessionByUserIdPdo($user_id) {
-    $sql = "DELETE FROM `user_sessions` WHERE `user_id` = :user_id";
-    $q = $this->_pdo->prepare($sql);
-    return $q->execute(array(":user_id" => $user_id));
-  }
-
-  private function removeSessionByTokenPdo($token) {
-    $sql = "DELETE FROM `user_sessions` WHERE `token` = :token";
-    $q = $this->_pdo->prepare($sql);
-    return $q->execute(array(":token" => $token));
-  }
-
-  private function removeSessionByIdPdo($session_id) {
-    $sql = "DELETE FROM `user_sessions` WHERE `id` = :id";
-    $q = $this->_pdo->prepare($sql);
-    return $q->execute(array(":id" => $session_id));
   }
 }
