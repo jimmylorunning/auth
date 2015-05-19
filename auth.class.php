@@ -11,13 +11,11 @@ class Auth {
   const USER_EXISTS = 5;
 
   private $_siteKey;
-  private $_pdo;
   private $_user_gw;
   private $_session;
 
   public function __construct() {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
-    $this->_pdo = ConnectionFactory::getFactory()->getConnection();
     $this->_user_gw = new UserGateway();
     $this->_session = new Session();
   }
