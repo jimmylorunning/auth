@@ -4,7 +4,9 @@ require_once 'auth.class.php';
 require_once 'connectionfactory.class.php';
 
 // http://code.tutsplus.com/tutorials/evolving-toward-a-persistence-layer--net-27138
-
+/**
+ * @runTestsInSeparateProcesses
+ */
 class AuthTest extends PHPUnit_Framework_TestCase
 {
   private $auth;
@@ -56,6 +58,4 @@ class AuthTest extends PHPUnit_Framework_TestCase
     $result = $this->pdo->query("SELECT * FROM `users`");
     return $result->fetch(PDO::FETCH_ASSOC);
   }
-
 }
-?>

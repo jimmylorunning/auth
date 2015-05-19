@@ -1,6 +1,7 @@
 <?php
 require_once 'connectionfactory.class.php';
 require_once 'usergateway.class.php';
+require_once 'session.class.php';
 
 class Auth {
   const SUCCESSFUL = 1;
@@ -12,6 +13,7 @@ class Auth {
   private $_siteKey;
   private $_pdo;
   private $_user_gw;
+  private $_session;
 
 /*  
   public function __construct(Gateway $userGateway = null, Gateway $userSessionGateway = null) {
@@ -25,6 +27,7 @@ class Auth {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
     $this->_pdo = ConnectionFactory::getFactory()->getConnection();
     $this->_user_gw = new UserGateway();
+    $this->_session = new Session();
   }
 
   public function createUser($email, $password, $is_admin = 0) {
@@ -33,13 +36,6 @@ class Auth {
     }
     $user_salt = $this->randomString();
     $password = $this->saltAndHash($user_salt, $password);
-/*    $created = $this->createUserPdo(array(
-        ':email' => $email,
-        ':password' => $password,
-        ':user_salt' => $user_salt,
-        ':is_admin' => $is_admin,
-        ':is_active' => 1));
-*/
     $created = $this->_user_gw->create(array(
         ':email' => $email,
         ':password' => $password,
@@ -53,7 +49,6 @@ class Auth {
   }
   
   public function login($email, $password) {
-//    $selection = $this->findUserByEmailPdo($email);
     $selection = $this->_user_gw->findBy('email', $email);
     if ($selection == null) {
       return self::REJECT;
@@ -65,29 +60,20 @@ class Auth {
       if (!$is_active) {
         return self::NOT_ACTIVE;
       } 
-      return $this->createSession($selection['id']); 
+      $rows = $this->_session->create($selection['id'], $this->createToken()); 
+      return $rows ? self::SUCCESSFUL : self::ERROR_OCCURRED;
     }
     return self::REJECT;
   }
 
   public function checkSession() {
-    session_start();
-    $row = $this->retrieveSession();    
-    if ($row) {
-      if (session_id() == $row['session_id'] && 
-        $_SESSION['token'] == $row['token']) {
-          $this->refreshSession();
-          return $row['user_id'];
-      }
-    }
-    return false;
+    return $this->_session->refreshIfValid($this->createToken());
   }
 
   // to do: instantiate User instance (first I'd have to write a User class though)
   public function currentUser() {
-    $user_id = $this->checkSession();
+    $user_id = $this->_session->isValid();
     if ($user_id) {
-//      return $this->findUserByIdPdo($user_id);
       return $this->_user_gw->findById($user_id);
     }
     return false;
@@ -113,42 +99,11 @@ class Auth {
     
 
   private function userExists($email) {
-//    $selection = $this->findUserByEmailPdo($email);
     $selection = $this->_user_gw->findBy('email', $email);
     if ($selection) {
       return true;
     }
     return false; 
-  }
-
-  private function refreshSession() {
-    session_start(); // in case it hasn't already been called
-    session_regenerate_id();
-    $token = $this->createToken();
-    $_SESSION['token'] = $token;
-    return $this->removeAndCreateSession($_SESSION['user_id'], $token);
-  }
-
-  private function createSession($user_id) {
-    $token = $this->createToken();
-    session_start();
-    $_SESSION['token'] = $token;
-    $_SESSION['user_id'] = $user_id;
-    return $this->removeAndCreateSession($user_id, $token);
-  }
-
-  private function removeAndCreateSession($user_id, $token) {
-    if ($this->removeSessionByUserIdPdo($user_id) &&
-      $this->createSessionPdo($user_id, $token)) {
-        return self::SUCCESSFUL;
-    }
-    return self::ERROR_OCCURRED;
-  }
-
-  private function retrieveSession() {
-    $user_id = $_SESSION['user_id'];
-    $row = $this->retrieveSessionPdo($user_id);
-    return $row;
   }
 
   private function saltAndHash($salt, $password) {
@@ -200,26 +155,4 @@ class Auth {
     $q = $this->_pdo->prepare($sql);
     return $q->execute(array(":id" => $session_id));
   }
-
-  private function createSessionPdo($user_id, $token) {
-    $session_id = session_id();
-    if ($session_id === "") {
-      return false;
-    }
-    $sql = "INSERT INTO  `user_sessions` (user_id,session_id,token) "
-      . "VALUES (:user_id,:session_id,:token)";
-    $q = $this->_pdo->prepare($sql);
-    return $q->execute(array(":user_id" => $user_id,
-      ":session_id" => $session_id,
-      ":token" => $token));
-  }
-
-  private function retrieveSessionPdo($user_id) {
-    $sql = "SELECT * FROM `user_sessions` WHERE `user_id` = :user_id";
-    $q = $this->_pdo->prepare($sql);
-    $q->execute(array(':user_id' => $user_id));
-    $row = $q->fetch(PDO::FETCH_ASSOC);
-    return $row;
-  } 
 }
-?>
