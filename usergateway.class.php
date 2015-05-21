@@ -12,8 +12,10 @@ class UserGateway implements Gateway {
     $sql = "INSERT INTO `users` (email,password,user_salt,is_admin,is_active) " .
       "VALUES (:email,:password,:user_salt,:is_admin,:is_active)";
     $q = $this->_dbhandle->prepare($sql);
-    $q->execute($user);
-    return $q->rowCount();
+    if ($q->execute($user)) {
+      return $this->_dbhandle->lastInsertId(); // this may not be threadsafe?
+    }
+    return false;
   }
 
   public function findById($id) {
@@ -24,12 +26,17 @@ class UserGateway implements Gateway {
     return $row;
   }
 
-  public function findBy($key, $value) {
+  public function findBy($key, $value, $fetchclass=false) {
     $sql = "SELECT * FROM `users` WHERE `$key` = :$key";
     $q = $this->_dbhandle->prepare($sql);
+    if ($fetchclass) {
+      $q->setFetchMode(PDO::FETCH_CLASS, 'User');
+    } else {
+      $q->setFetchMode(PDO::FETCH_ASSOC);
+    }
     $q->execute(array(":$key" => $value));
-    $row = $q->fetch(PDO::FETCH_ASSOC);
-    return $row;
+    $rv = $q->fetch();
+    return $rv;
   }
 
 }

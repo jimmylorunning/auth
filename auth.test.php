@@ -21,23 +21,23 @@ class AuthTest extends PHPUnit_Framework_TestCase
   public function testCreateUser() {
     $this->cleanUpDatabase();
 
-    $authcode = $this->auth->createUser("jimmy", "password");
+    $authcode = $this->auth->createUser("jimmy@gmail.com", "passwordABC");
     $user = $this->getUsersFromDatabase();
-    $this->assertEquals('jimmy', $user['email']);
+    $this->assertEquals(Auth::SUCCESSFUL, $authcode);
+    $this->assertEquals('jimmy@gmail.com', $user['email']);
     $this->assertEquals(0, $user['is_admin']);
     $this->assertEquals(1, $user['is_active']);
     $this->assertGreaterThan(0, strlen($user['password']));
     $this->assertGreaterThan(0, strlen($user['user_salt'])); 
-    $this->assertEquals(Auth::SUCCESSFUL, $authcode);
   }
 
   public function testDuplicateUser() {
     $this->cleanUpDatabase();
 
-    $authcode = $this->auth->createUser("jimmy", "password");
+    $authcode = $this->auth->createUser("jimmy@gmail.com", "passwordXYZ");
     $user = $this->getUsersFromDatabase();
     $this->assertEquals(Auth::SUCCESSFUL, $authcode);
-    $authcode = $this->auth->createUser("jimmy", "pineapple");
+    $authcode = $this->auth->createUser("jimmy@gmail.com", "pineappleHAHA");
     $user = $this->getUsersFromDatabase();
     $this->assertEquals(Auth::USER_EXISTS, $authcode);
   }

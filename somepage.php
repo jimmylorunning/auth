@@ -11,7 +11,7 @@
 
   $user = $auth->currentUser();
   if ($user) {
-    $cu = "Welcome, {$user['email']}";
+    $cu = "Welcome, {$user->email}";
   } else {
     $cu = "User not found because you are NOT logged in!";
   }
