@@ -2,7 +2,8 @@
   require_once 'auth.class.php';
   require_once 'config.inc.php';
   
-  $auth = new Auth();
+  $user = new User();
+  $auth = new Auth($user);
   $auth->logout();
 ?>
 OK.

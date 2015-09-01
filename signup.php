@@ -2,7 +2,8 @@
 if ($_POST) {
   require_once 'auth.class.php';
   
-  $auth = new Auth();
+  $user = new User();
+  $auth = new Auth($user);
   echo $auth->createUser($_POST['email'], $_POST['password']);
   
 } else { ?>

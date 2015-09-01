@@ -8,16 +8,24 @@ class Auth {
   const ERROR_OCCURRED = 3;
   const REJECT = 4;
   const USER_EXISTS = 5;
+  const NO_USER = 6;
 
   private $_siteKey;
   private $_session;
+  private $_user;
+  private $_user_gw;
 
-  public function __construct() {
+  public function __construct($user) {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
     $this->_session = new Session();
+    $this->_user = $user;
+    $this->_user_gw = new UserGateway();
   }
 
   public function createUser($email, $password, $is_admin = 0) {
+    if (!$this->_user) {
+      return self::NO_USER;
+    }
     if (!$this->validEmailAndPassword($email, $password)) {
       return self::ERROR_OCCURRED;
     }
@@ -26,14 +34,13 @@ class Auth {
     }
     $user_salt = $this->randomString();
     $password = $this->saltAndHash($user_salt, $password);
-    $user = new User();
-    $user->import(array(
+    $this->_user->import(array(
         ':email' => $email,
         ':password' => $password,
         ':user_salt' => $user_salt,
         ':is_admin' => $is_admin,
         ':is_active' => 1), ':');
-    $created = $user->create();
+    $created = $this->_user->create();
     if($created) {
       return self::SUCCESSFUL;
     }

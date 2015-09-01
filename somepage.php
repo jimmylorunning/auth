@@ -1,7 +1,8 @@
 <?php
   require_once 'auth.class.php';
 
-  $auth = new Auth();
+  $user = new User();
+  $auth = new Auth($user);
 
   if ($auth->checkSession()) {
     $cs = "you're logged in";
