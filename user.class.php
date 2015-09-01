@@ -30,12 +30,7 @@ class User {
       $pre . 'is_admin' => $this->getIsAdmin(),
       $pre . 'is_active' => $this->getIsActive());
   }
-
-  public static function getUserBy($key, $value) {
-    $user_gw = new UserGateway();
-    return $user_gw->findBy($key, $value, true);
-  }
-
+  
   public function create() {
     if ($this->validNewUser()) {
       if ($id = $this->_user_gw->create($this->export(), ':')) {

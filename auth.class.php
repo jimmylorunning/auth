@@ -49,7 +49,7 @@ class Auth {
   }
   
   public function login($email, $password) {
-    if ($user = User::getUserBy('email', $email)) {
+    if ($user = $this->_user_gw->findBy('email', $email, true)) {
       $password = $this->saltAndHash($user->getUserSalt(), $password);
       $is_active = (boolean) $user->getIsActive();
 
