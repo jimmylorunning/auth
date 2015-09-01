@@ -39,4 +39,12 @@ class UserGateway implements Gateway {
     return $rv;
   }
 
+  public function existsBy($key, $value, $fetchclass=false) {
+    $selection = $this->findBy($key, $value, $fetchclass);
+    if ($selection) {
+      return true;
+    }  
+    return false;
+  }
+
 }

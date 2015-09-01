@@ -1,6 +1,7 @@
 <?php
 require_once 'user.class.php';
 require_once 'session.class.php';
+require_once 'usergateway.class.php';
 
 class Auth {
   const SUCCESSFUL = 1;
@@ -29,9 +30,9 @@ class Auth {
     if (!$this->validEmailAndPassword($email, $password)) {
       return self::ERROR_OCCURRED;
     }
-    if (User::userExists($email)) {
+    if ($this->_user_gw->existsBy('email', $email)) {
       return self::USER_EXISTS;
-    }
+    } 
     $user_salt = $this->randomString();
     $password = $this->saltAndHash($user_salt, $password);
     $this->_user->import(array(

@@ -14,15 +14,6 @@ class User {
     $this->_user_gw = new UserGateway();
   }
 
-  public static function userExists($email) {
-    $user_gw = new UserGateway();
-    $selection = $user_gw->findBy('email', $email);
-    if ($selection) {
-      return true;
-    }
-    return false;
-  }
-
   public function import($user_array, $pre='') {
     $this->email = $user_array[$pre . 'email'];
     $this->setPassword($user_array[$pre . 'password']);
@@ -72,7 +63,7 @@ class User {
   }
 
   public function validNewUser() {
-    if (!User::userExists($this->email)) {
+    if (!$this->_user_gw->existsBy('email', $this->email)) {
       return $this->validUser();
     }
     return false;
