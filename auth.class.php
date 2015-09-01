@@ -16,11 +16,15 @@ class Auth {
   private $_user;
   private $_user_gw;
 
-  public function __construct($user) {
+  public function __construct($user, $user_gw=null) {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
     $this->_session = new Session();
     $this->_user = $user;
-    $this->_user_gw = new UserGateway();
+    if (!$user_gw) {
+      $this->_user_gw = new UserGateway();
+    } else {
+      $this->_user_gw = $user_gw;
+    }
   }
 
   public function createUser($email, $password, $is_admin = 0) {

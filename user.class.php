@@ -10,8 +10,12 @@ class User {
   private $is_admin;
   private $is_active;
 
-  public function __construct() {
-    $this->_user_gw = new UserGateway();
+  public function __construct($user_gw=null) {
+    if(!$user_gw) {
+      $this->_user_gw = new UserGateway();
+    } else {
+      $this->_user_gw = $user_gw;
+    }
   }
 
   public function import($user_array, $pre='') {
@@ -30,7 +34,7 @@ class User {
       $pre . 'is_admin' => $this->getIsAdmin(),
       $pre . 'is_active' => $this->getIsActive());
   }
-  
+
   public function create() {
     if ($this->validNewUser()) {
       if ($id = $this->_user_gw->create($this->export(), ':')) {
