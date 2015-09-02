@@ -5,7 +5,8 @@ require_once 'connectionfactory.class.php';
 
 // http://code.tutsplus.com/tutorials/evolving-toward-a-persistence-layer--net-27138
 /**
- * @runTestsInSeparateProcesses
+ * @backupGlobals disabled
+ * @backupStaticAttributes disabled
  */
 class AuthTest extends PHPUnit_Framework_TestCase
 {
@@ -19,44 +20,37 @@ class AuthTest extends PHPUnit_Framework_TestCase
     $this->usr = $this->getMockBuilder('User')
                 ->setMethods(array('import', 'create'))
                 ->getMock();
-    $this->auth = new Auth($this->usr);
+    $this->usr_gw = $this->getMockBuilder('UserGateway')
+                ->getMock();
+    $this->usr_session = $this->getMockBuilder('Wendell')
+                ->getMock();                
+    $this->auth = new Auth($this->usr, $this->usr_session, $this->usr_gw);
   }    
 
   public function testCreateUserCallsUserCreate() {
     $this->cleanUpDatabase();
-/*
-    $authcode = $this->auth->createUser("jimmy@gmail.com", "passwordABC");
-    $user = $this->getUsersFromDatabase();
-    $this->assertEquals(Auth::SUCCESSFUL, $authcode);
-    $this->assertEquals('jimmy@gmail.com', $user['email']);
-    $this->assertEquals(0, $user['is_admin']);
-    $this->assertEquals(1, $user['is_active']);
-    $this->assertGreaterThan(0, strlen($user['password']));
-    $this->assertGreaterThan(0, strlen($user['user_salt'])); 
-*/
+    $this->usr_gw->method('existsBy')->willReturn(false);
     $this->usr->expects($this->once())
       ->method('create');
     $this->auth->createUser("jimmy@gmail.com", "passwordABC");
   }
 
-  public function testCreateUserReturnsSuccess() {
+ public function testCreateUserReturnsSuccess() {
     $this->cleanUpDatabase();
+    $this->usr_gw->method('existsBy')->willReturn(false);
     $this->usr->method('create')
       ->willReturn(true);
     $authcode = $this->auth->createUser("jimmy@gmail.com", "passwordABC");
     $this->assertEquals(Auth::SUCCESSFUL, $authcode);
   }
 
-  public function testDuplicateUser() {
+  public function testDuplicateUserShouldFail() {
     $this->cleanUpDatabase();
-/*
-    $authcode = $this->auth->createUser("jimmy@gmail.com", "passwordXYZ");
-    $user = $this->getUsersFromDatabase();
-    $this->assertEquals(Auth::SUCCESSFUL, $authcode);
-    $authcode = $this->auth->createUser("jimmy@gmail.com", "pineappleHAHA");
+    $this->usr_gw->method('existsBy')->willReturn(true);
+    $this->usr->method('create')
+      ->willReturn(true);
+    $authcode = $this->auth->createUser("jimmy@gmail.com", "passwordABC");
     $this->assertEquals(Auth::USER_EXISTS, $authcode);
-    $user = $this->getUsersFromDatabase();
-    $this->assertEquals(Auth::USER_EXISTS, $authcode); */
   }
 
   public function tearDownOld() {
@@ -76,3 +70,5 @@ class AuthTest extends PHPUnit_Framework_TestCase
     return $result->fetch(PDO::FETCH_ASSOC);
   }
 }
+/* @runTestsInSeparateProcesses
+*/
