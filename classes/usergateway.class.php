@@ -36,7 +36,9 @@ class UserGateway implements Gateway {
     }
     $q->execute(array(":$key" => $value));
     $user = $q->fetch();
-    $user->setUserGateway($this);
+    if ($user) {
+      $user->setUserGateway($this);
+    }
     return $user;
   }
 
