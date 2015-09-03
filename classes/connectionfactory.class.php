@@ -1,6 +1,4 @@
 <?php
-require_once 'config.inc.php';
-
 class ConnectionFactory 
 {
   private static $_factory; 

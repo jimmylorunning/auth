@@ -1,7 +1,8 @@
 <?php
 
-require_once 'auth.class.php';
-require_once 'connectionfactory.class.php';
+require_once 'shared/database.inc.php';
+require_once 'classes/auth.class.php';
+require_once 'classes/connectionfactory.class.php';
 
 // http://code.tutsplus.com/tutorials/evolving-toward-a-persistence-layer--net-27138
 /**

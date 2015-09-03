@@ -1,5 +1,5 @@
 <?php
-  require_once 'loadclasses.php';
+  require_once 'shared/config.inc.php';
 
   $session_gw = new SessionGateway(ConnectionFactory::getFactory()->getConnection());
   $user = new User();

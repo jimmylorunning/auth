@@ -1,5 +1,5 @@
 <?php
-require_once 'gateway.php';
+require_once 'classes/gateway.php';
 
 class SessionGateway implements Gateway {
   private $_dbhandle;

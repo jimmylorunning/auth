@@ -6,4 +6,3 @@ $dbconfig = array(
   'charset' => 'utf8',
   'user' => 'vrp',
   'password' => 'F66uAtnjzTHTtdQm');
-?>
