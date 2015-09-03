@@ -52,7 +52,7 @@ class Auth {
       if ($user->getPassword() === $password) {
         if (!$is_active) {
           return self::NOT_ACTIVE;
-        } 
+        }
         $rows = $this->_session->create($user->id, $this->createToken()); 
         return $rows ? self::SUCCESSFUL : self::ERROR_OCCURRED;
       }

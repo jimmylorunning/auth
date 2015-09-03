@@ -10,8 +10,7 @@ class ConnectionFactory
     return self::$_factory;
   }
 
-  public function getConnection() {
-    global $dbconfig;
+  public function getConnection($dbconfig) {
     if( is_null($_connection) ) {
       $_connection = new PDO("mysql:host={$dbconfig['host']};" .
         "dbname={$dbconfig['dbname']};" .

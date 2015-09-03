@@ -4,8 +4,8 @@ require_once 'classes/gateway.php';
 class UserGateway implements Gateway {
   private $_dbhandle;
 
-  function __construct($dbhandle = null) {
-    $this->_dbhandle = ConnectionFactory::getFactory()->getConnection();
+  function __construct($dbconfig) {
+    $this->_dbhandle = ConnectionFactory::getFactory()->getConnection($dbconfig);
   }
 
   public function create($user) {
@@ -35,8 +35,9 @@ class UserGateway implements Gateway {
       $q->setFetchMode(PDO::FETCH_ASSOC);
     }
     $q->execute(array(":$key" => $value));
-    $rv = $q->fetch();
-    return $rv;
+    $user = $q->fetch();
+    $user->setUserGateway($this);
+    return $user;
   }
 
   public function existsBy($key, $value, $fetchclass=false) {

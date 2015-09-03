@@ -4,8 +4,8 @@ require_once 'classes/gateway.php';
 class SessionGateway implements Gateway {
   private $_dbhandle;
 
-  function __construct($dbhandle = null) {
-    $this->_dbhandle = ConnectionFactory::getFactory()->getConnection();
+  function __construct($dbconfig) {
+    $this->_dbhandle = ConnectionFactory::getFactory()->getConnection($dbconfig);
   }
 
   public function create($session) {

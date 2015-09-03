@@ -9,11 +9,7 @@ class User {
   private $is_active;
 
   public function __construct($user_gw=null) {
-    if(!$user_gw) {
-      $this->_user_gw = new UserGateway();
-    } else {
-      $this->_user_gw = $user_gw;
-    }
+    $this->_user_gw = $user_gw;
   }
 
   public function import($user_array, $pre='') {
@@ -119,6 +115,10 @@ class User {
 
   public function setIsActive($is_active) {
     $this->is_active = $is_active;
+  }
+
+  public function setUserGateway($user_gw) {
+    $this->_user_gw = $user_gw;
   }
 }
   
