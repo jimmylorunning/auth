@@ -5,4 +5,4 @@ $dbconfig = array(
   'dbname' => 'vrp',
   'charset' => 'utf8',
   'user' => 'vrp',
-  'password' => 'F66uAtnjzTHTtdQm');
+  'password' => '&88nKEH[tvWJizDr2dp');
