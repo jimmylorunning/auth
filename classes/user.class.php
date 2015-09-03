@@ -1,6 +1,4 @@
 <?php
-require_once 'usergateway.class.php';
-
 class User {
   private $_user_gw;
   public $email;
