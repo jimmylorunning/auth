@@ -1,9 +1,12 @@
 <?php
-  require_once 'auth.class.php';
+  require_once 'loadclasses.php';
 
+  $session_gw = new SessionGateway(ConnectionFactory::getFactory()->getConnection());
   $user = new User();
-  $auth = new Auth($user);
+  $user_gw = new UserGateway();
+  $session = new Session($session_gw);
 
+  $auth = new Auth($user, $session, $user_gw);
   if ($auth->checkSession()) {
     $cs = "you're logged in";
   } else {

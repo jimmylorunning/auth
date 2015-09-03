@@ -1,12 +1,11 @@
 <?php
-require_once 'sessiongateway.class.php';
-
 class Session {
   private $_session_gw;
 
-  public function __construct() {
+  public function __construct($my_session_gateway) {
     session_start();
-    $this->_session_gw = new SessionGateway();
+    // to do: move this outside of class, no dependencies = better
+    $this->_session_gw = $my_session_gateway;
   }
 
   public function findBy($key) {

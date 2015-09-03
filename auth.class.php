@@ -1,8 +1,4 @@
 <?php
-require_once 'user.class.php';
-require_once 'session.class.php';
-require_once 'usergateway.class.php';
-
 class Auth {
   const SUCCESSFUL = 1;
   const NOT_ACTIVE = 2;
@@ -16,19 +12,11 @@ class Auth {
   private $_user;
   private $_user_gw;
 
-  public function __construct($user, $session=null, $user_gw=null) {
+  public function __construct($user, $session, $user_gw) {
     $this->_siteKey = "UTCu7Nt?C4#rK97()4zZkVzwJqVkJ&4&4{)k7vJLF,cQGo)4g4";
-    if (!$session) {
-      $this->_session = new Session();
-    } else {
-      $this->_session = $session;
-    }
+    $this->_session = $session;
     $this->_user = $user;
-    if (!$user_gw) {
-      $this->_user_gw = new UserGateway();
-    } else {
-      $this->_user_gw = $user_gw;
-    }
+    $this->_user_gw = $user_gw;
   }
 
   public function createUser($email, $password, $is_admin = 0) {
@@ -79,7 +67,13 @@ class Auth {
   public function currentUser() {
     $user_id = $this->_session->isValid();
     if ($user_id) {
-      return User::getUserBy('id', $user_id);
+      if ($this->_user->id == $user_id) {
+        return $this->_user;
+      } else {
+        $this->_user->import($this->_user_gw->findById($user_id));
+        $this->_user->id = $user_id;
+        return $this->_user;
+      }
     }
     return false;
   }

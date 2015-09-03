@@ -1,9 +1,13 @@
 <?php
 if ($_POST) {
-  require_once 'auth.class.php';
+  require_once 'loadclasses.php';
 
-  $user = new User(); 
-  $auth = new Auth($user);
+  $session_gw = new SessionGateway(ConnectionFactory::getFactory()->getConnection());
+  $user = new User();
+  $user_gw = new UserGateway();
+  $session = new Session($session_gw);
+
+  $auth = new Auth($user, $session, $user_gw);
   $authcode = $auth->login($_POST['email'], $_POST['password']);
   echo $authcode;
 

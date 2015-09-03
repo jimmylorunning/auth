@@ -21,6 +21,7 @@ class AuthTest extends PHPUnit_Framework_TestCase
                 ->setMethods(array('import', 'create'))
                 ->getMock();
     $this->usr_gw = $this->getMockBuilder('UserGateway')
+                ->setMethods(array('existsBy'))
                 ->getMock();
     $this->usr_session = $this->getMockBuilder('Wendell')
                 ->getMock();                
