@@ -26,7 +26,7 @@ class Auth {
     if (!$this->validEmailAndPassword($email, $password)) {
       return self::ERROR_OCCURRED;
     }
-    if ($this->_user_gw->existsBy('email', $email)) {
+    if ($this->_user_gw->findBy('email', $email)) {
       return self::USER_EXISTS;
     } 
     $user_salt = $this->randomString();
@@ -45,15 +45,15 @@ class Auth {
   }
   
   public function login($email, $password) {
-    if ($user = $this->_user_gw->findBy('email', $email, true)) {
-      $password = $this->saltAndHash($user->getUserSalt(), $password);
-      $is_active = (boolean) $user->getIsActive();
+    if ($user_row = $this->_user_gw->findBy('email', $email)) {
+      $this->_user->import($user_row);
+      $password = $this->saltAndHash($this->_user->getUserSalt(), $password);
 
-      if ($user->getPassword() === $password) {
-        if (!$is_active) {
+      if ($this->_user->getPassword() === $password) {
+        if (!$this->_user->getIsActive()) {
           return self::NOT_ACTIVE;
         }
-        $rows = $this->_session->create($user->id, $this->createToken()); 
+        $rows = $this->_session->create($this->_user->id, $this->createToken()); 
         return $rows ? self::SUCCESSFUL : self::ERROR_OCCURRED;
       }
     }
@@ -71,7 +71,6 @@ class Auth {
         return $this->_user;
       } else {
         $this->_user->import($this->_user_gw->findById($user_id));
-        $this->_user->id = $user_id;
         return $this->_user;
       }
     }

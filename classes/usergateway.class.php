@@ -26,28 +26,12 @@ class UserGateway implements Gateway {
     return $row;
   }
 
-  public function findBy($key, $value, $fetchclass=false) {
+  public function findBy($key, $value) {
     $sql = "SELECT * FROM `users` WHERE `$key` = :$key";
     $q = $this->_dbhandle->prepare($sql);
-    if ($fetchclass) {
-      $q->setFetchMode(PDO::FETCH_CLASS, 'User');
-    } else {
-      $q->setFetchMode(PDO::FETCH_ASSOC);
-    }
+    $q->setFetchMode(PDO::FETCH_ASSOC);
     $q->execute(array(":$key" => $value));
-    $user = $q->fetch();
-    if ($user) {
-      $user->setUserGateway($this);
-    }
-    return $user;
+    $user_row = $q->fetch();
+    return $user_row;
   }
-
-  public function existsBy($key, $value, $fetchclass=false) {
-    $selection = $this->findBy($key, $value, $fetchclass);
-    if ($selection) {
-      return true;
-    }  
-    return false;
-  }
-
 }

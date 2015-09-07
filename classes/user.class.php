@@ -9,10 +9,17 @@ class User {
   private $is_active;
 
   public function __construct($user_gw=null) {
+    $this->init($user_gw);
+  }
+
+  public function init($user_gw) {
     $this->_user_gw = $user_gw;
   }
 
   public function import($user_array, $pre='') {
+    if (array_key_exists($pre . 'id', $user_array)) {
+      $this->id = $user_array[$pre . 'id'];
+    }
     $this->email = $user_array[$pre . 'email'];
     $this->setPassword($user_array[$pre . 'password']);
     $this->setUserSalt($user_array[$pre . 'user_salt']);
@@ -56,7 +63,7 @@ class User {
   }
 
   public function validNewUser() {
-    if (!$this->_user_gw->existsBy('email', $this->email)) {
+    if (!$this->_user_gw->findBy('email', $this->email)) {
       return $this->validUser();
     }
     return false;
@@ -117,8 +124,5 @@ class User {
     $this->is_active = $is_active;
   }
 
-  public function setUserGateway($user_gw) {
-    $this->_user_gw = $user_gw;
-  }
 }
   
