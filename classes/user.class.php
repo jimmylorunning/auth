@@ -16,15 +16,15 @@ class User {
     $this->_user_gw = $user_gw;
   }
 
-  public function import($user_array, $pre='') {
+  public function import($user_array) {
     if (array_key_exists($pre . 'id', $user_array)) {
-      $this->id = $user_array[$pre . 'id'];
+      $this->id = $user_array['id'];
     }
-    $this->email = $user_array[$pre . 'email'];
-    $this->setPassword($user_array[$pre . 'password']);
-    $this->setUserSalt($user_array[$pre . 'user_salt']);
-    $this->setIsAdmin($user_array[$pre . 'is_admin']);
-    $this->setIsActive($user_array[$pre . 'is_active']);
+    $this->email = $user_array['email'];
+    $this->setPassword($user_array['password']);
+    $this->setUserSalt($user_array['user_salt']);
+    $this->setIsAdmin($user_array['is_admin']);
+    $this->setIsActive($user_array['is_active']);
   }
 
   public function export($pre='') {

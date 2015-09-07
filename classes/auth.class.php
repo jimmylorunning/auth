@@ -32,11 +32,11 @@ class Auth {
     $user_salt = $this->randomString();
     $password = $this->saltAndHash($user_salt, $password);
     $this->_user->import(array(
-        ':email' => $email,
-        ':password' => $password,
-        ':user_salt' => $user_salt,
-        ':is_admin' => $is_admin,
-        ':is_active' => 1), ':');
+        'email' => $email,
+        'password' => $password,
+        'user_salt' => $user_salt,
+        'is_admin' => $is_admin,
+        'is_active' => 1));
     $created = $this->_user->create();
     if($created) {
       return self::SUCCESSFUL;
