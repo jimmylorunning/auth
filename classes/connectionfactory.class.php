@@ -11,14 +11,14 @@ class ConnectionFactory
   }
 
   public function getConnection($dbconfig) {
-    if( is_null($_connection) ) {
-      $_connection = new PDO("mysql:host={$dbconfig['host']};" .
+    if( is_null($this->_connection) ) {
+      $this->_connection = new PDO("mysql:host={$dbconfig['host']};" .
         "dbname={$dbconfig['dbname']};" .
         "charset={$dbconfig['charset']}",
         $dbconfig['user'],
         $dbconfig['password'],
         array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
     }
-    return $_connection;
+    return $this->_connection;
   }
 }
