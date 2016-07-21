@@ -16,7 +16,7 @@ class User {
     $this->_user_gw = $user_gw;
   }
 
-  public function import($user_array) {
+  public function import($user_array, $pre='') {
     if (array_key_exists($pre . 'id', $user_array)) {
       $this->id = $user_array['id'];
     }
